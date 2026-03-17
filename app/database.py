@@ -6,25 +6,26 @@ import os
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://docverify:docverify@postgres:5432/docverify"
-).replace("postgresql+asyncpg", "postgresql")  # Use sync driver
+).replace("postgresql+asyncpg", "postgresql")
 
-engine = create_engine(DATABASE_URL)
+# SQLite needs special connect args for thread safety in tests
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
 
 class VerificationResult(Base):
-    """Stores every document verification result."""
     __tablename__ = "verification_results"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     job_id = Column(String(100), unique=True, index=True, nullable=False)
     filename = Column(String(255))
     content_type = Column(String(100))
-    status = Column(String(20), default="pending")   # pending/processing/done/error
+    status = Column(String(20), default="pending")
 
-    # Results (stored as JSON)
-    verdict = Column(String(20))          # PASS / REVIEW / FAIL
+    verdict = Column(String(20))
     score = Column(Float)
     predicted_class = Column(String(50))
     confidence = Column(Float)
@@ -39,12 +40,10 @@ class VerificationResult(Base):
 
 
 def init_db():
-    """Create tables if they don't exist."""
     Base.metadata.create_all(bind=engine)
 
 
 def get_db():
-    """Dependency: yields a database session."""
     db = SessionLocal()
     try:
         yield db
