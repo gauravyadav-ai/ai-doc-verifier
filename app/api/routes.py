@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.pipeline.ocr import run_ocr, validate_file
 from app.pipeline.extractor import extract_features
+from app.pipeline.classifier import classify_document
 
 router = APIRouter(prefix="/api/v1", tags=["verification"])
 
@@ -8,7 +9,7 @@ router = APIRouter(prefix="/api/v1", tags=["verification"])
 @router.post("/verify")
 async def verify_document(file: UploadFile = File(...)):
     """
-    Upload a document (image or PDF) and extract text + structured features.
+    Upload a document → OCR → feature extraction → ML classification.
 
     Accepts: JPEG, PNG, TIFF, BMP, PDF
     Max size: 10MB
@@ -31,8 +32,11 @@ async def verify_document(file: UploadFile = File(...)):
         filename=file.filename,
     )
 
-    # Step 3: Feature extraction on full text
+    # Step 3: Feature extraction
     features = extract_features(ocr_result["full_text"])
+
+    # Step 4: ML classification
+    classification = classify_document(ocr_result["full_text"], features)
 
     return {
         "status": "success",
@@ -47,6 +51,7 @@ async def verify_document(file: UploadFile = File(...)):
                 "pages": ocr_result["pages"],
             },
             "features": features,
+            "classification": classification,
         },
     }
 
