@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Document Verifier</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container { width: 100%; max-width: 640px; }
+
+    .header { text-align: center; margin-bottom: 2rem; }
+    .logo {
+      width: 52px; height: 52px;
+      background: #EEEDFE;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .header h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+    .header p { font-size: 14px; color: #666; }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 0.5px solid #e0e0d8;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .upload-zone {
+      border: 1.5px dashed #ccc;
+      border-radius: 12px;
+      padding: 2.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #fafaf8;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #7F77DD;
+      background: #EEEDFE;
+    }
+    .upload-zone p { font-size: 14px; color: #666; margin-bottom: 1rem; }
+    .upload-zone small { font-size: 12px; color: #999; display: block; margin-top: 0.75rem; }
+
+    input[type="file"] { display: none; }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 8px;
+      border: 0.5px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #f0f0ec; }
+    .btn-primary {
+      background: #534AB7;
+      color: #fff;
+      border-color: #534AB7;
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+    .btn-primary:hover { background: #3C3489; border-color: #3C3489; }
+    .btn-primary:disabled { background: #b0aee0; border-color: #b0aee0; cursor: not-allowed; }
+
+    .file-selected {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #f5f5f0;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-size: 13px;
+    }
+    .file-selected .file-icon {
+      width: 32px; height: 32px;
+      background: #EEEDFE;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .file-name { font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-size { color: #888; font-size: 12px; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid #e0e0d8;
+      border-top-color: #534AB7;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .result-card { display: none; }
+
+    .verdict-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .verdict-PASS   { background: #EAF3DE; color: #27500A; }
+    .verdict-REVIEW { background: #FAEEDA; color: #633806; }
+    .verdict-FAIL   { background: #FCEBEB; color: #791F1F; }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 0.5px solid #e0e0d8;
+    }
+    .result-filename { font-size: 14px; font-weight: 500; }
+    .result-summary { font-size: 13px; color: #666; margin-top: 4px; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+    .metric {
+      background: #f5f5f0;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .metric-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+    .metric-value { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 1rem 0 8px;
+    }
+
+    .entities { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.5rem; }
+    .entity-pill {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      background: #f0f0ec;
+      color: #444;
+      border: 0.5px solid #e0e0d8;
+    }
+
+    .rules-list { list-style: none; }
+    .rules-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 0.5px solid #f0f0ec;
+      color: #444;
+    }
+    .rules-list li:last-child { border-bottom: none; }
+    .rule-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+    .dot-pass   { background: #639922; }
+    .dot-error  { background: #E24B4A; }
+    .dot-warning{ background: #BA7517; }
+    .dot-info   { background: #378ADD; }
+
+    .ocr-text {
+      background: #f5f5f0;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.6;
+      max-height: 140px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .error-box {
+      background: #FCEBEB;
+      border: 0.5px solid #F09595;
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 13px;
+      color: #791F1F;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <polyline points="9 12 12 15 15 12"/>
+        <line x1="12" y1="15" x2="12" y2="9"/>
+      </svg>
+    </div>
+    <h1>AI Document Verifier</h1>
+    <p>Upload a document to verify its type and authenticity</p>
+  </div>
+
+  <!-- Upload card -->
+  <div class="card">
+    <div class="upload-zone" id="dropZone">
+      <p>Drag and drop your document here</p>
+      <button class="btn" onclick="document.getElementById('fileInput').click()">Choose file</button>
+      <small>PDF, JPG, PNG, TIFF up to 10MB</small>
+    </div>
+
+    <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.tiff,.bmp"/>
+
+    <div class="file-selected" id="fileSelected" style="display:none">
+      <div class="file-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <span class="file-name" id="fileName"></span>
+      <span class="file-size" id="fileSize"></span>
+    </div>
+
+    <button class="btn btn-primary" id="verifyBtn" disabled onclick="verify()">
+      Verify document
+    </button>
+  </div>
+
+  <!-- Error box -->
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- Result card -->
+  <div class="card result-card" id="resultCard">
+
+    <div class="result-header">
+      <div>
+        <div class="result-filename" id="resultFilename"></div>
+        <div class="result-summary" id="resultSummary"></div>
+      </div>
+      <span class="verdict-badge" id="verdictBadge"></span>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Document type</div>
+        <div class="metric-value" id="docType"></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Confidence</div>
+        <div class="metric-value" id="confidence"></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Score</div>
+        <div class="metric-value" id="score"></div>
+      </div>
+    </div>
+
+    <div id="entitiesSection">
+      <div class="section-title">Extracted entities</div>
+      <div class="entities" id="entities"></div>
+    </div>
+
+    <div class="section-title">Validation checks</div>
+    <ul class="rules-list" id="rulesList"></ul>
+
+    <div class="section-title">Extracted text</div>
+    <div class="ocr-text" id="ocrText"></div>
+
+  </div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const fileSelected = document.getElementById('fileSelected');
+  let selectedFile = null;
+
+  fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file) return;
+    selectedFile = file;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(0) + ' KB';
+    fileSelected.style.display = 'flex';
+    verifyBtn.disabled = false;
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'none';
+  }
+
+  async function verify() {
+    if (!selectedFile) return;
+
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = '<span class="spinner"></span>Verifying...';
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const res = await fetch('/api/v1/verify', { method: 'POST', body: formData });
+      const json = await res.json();
+
+      if (!res.ok) {
+        showError(json.detail || 'Verification failed.');
+        return;
+      }
+
+      renderResult(json.data, selectedFile.name);
+
+    } catch (err) {
+      showError('Could not connect to the API. Make sure the server is running.');
+    } finally {
+      verifyBtn.disabled = false;
+      verifyBtn.innerHTML = 'Verify document';
+    }
+  }
+
+  function renderResult(data, filename) {
+    const verdict = data.verdict.verdict;
+    const cls = data.classification;
+    const features = data.features;
+
+    document.getElementById('resultFilename').textContent = filename;
+    document.getElementById('resultSummary').textContent = data.verdict.summary;
+
+    const badge = document.getElementById('verdictBadge');
+    badge.textContent = verdict;
+    badge.className = 'verdict-badge verdict-' + verdict;
+
+    document.getElementById('docType').textContent =
+      cls.predicted_class.replace(/_/g, ' ');
+    document.getElementById('confidence').textContent = cls.confidence_pct;
+    document.getElementById('score').textContent = data.verdict.score_pct;
+
+    // Entities
+    const pills = [];
+    (features.dates || []).forEach(d => pills.push({ label: d, type: 'date' }));
+    (features.emails || []).forEach(e => pills.push({ label: e, type: 'email' }));
+    (features.urls || []).forEach(u => pills.push({ label: u, type: 'url' }));
+    (features.amounts || []).forEach(a => pills.push({ label: a, type: 'amount' }));
+    (features.pincodes || []).forEach(p => pills.push({ label: p, type: 'pincode' }));
+
+    const entitiesEl = document.getElementById('entities');
+    if (pills.length > 0) {
+      entitiesEl.innerHTML = pills.map(p =>
+        `<span class="entity-pill">${p.label}</span>`
+      ).join('');
+      document.getElementById('entitiesSection').style.display = 'block';
+    } else {
+      document.getElementById('entitiesSection').style.display = 'none';
+    }
+
+    // Rules
+    const rules = data.validation.rules.results || [];
+    const rulesList = document.getElementById('rulesList');
+    rulesList.innerHTML = rules.map(r => {
+      let dotClass = r.passed ? 'dot-pass' : (r.severity === 'error' ? 'dot-error' : r.severity === 'warning' ? 'dot-warning' : 'dot-info');
+      return `<li><span class="rule-dot ${dotClass}"></span>${r.message}</li>`;
+    }).join('');
+
+    // OCR text
+    document.getElementById('ocrText').textContent =
+      data.ocr.full_text || 'No text extracted.';
+
+    document.getElementById('resultCard').style.display = 'block';
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = msg;
+    box.style.display = 'block';
+  }
+</script>
+</body>
+</html>
