@@ -297,3 +297,56 @@ if __name__ == "__main__":
             fn(i)
         print(f"  Done - {count} PDFs")
     print(f"\nAll done! Run: docker compose exec api python scripts/train_with_real_data.py")
+
+
+def gen_research_paper(i):
+    author = random.choice(NAMES)
+    uni = random.choice(UNIVERSITIES)
+    topics = ["Deep Learning", "Natural Language Processing", "Computer Vision",
+              "Blockchain", "Cloud Computing", "Cybersecurity", "IoT", "Robotics"]
+    topic = random.choice(topics)
+    write_pdf([
+        f"TITLE:{topic}: A Comprehensive Study",
+        f"HEAD:Abstract",
+        f"This paper presents a novel approach to {topic.lower()}. "
+        f"We propose a new methodology that achieves state-of-the-art results. "
+        f"Experimental evaluation demonstrates significant improvements over baselines.",
+        "",
+        f"Keywords: {topic}, machine learning, neural networks, optimization",
+        "---",
+        f"HEAD:1. Introduction",
+        f"Recent advances in {topic.lower()} have shown promising results. "
+        f"However, existing methods suffer from limitations in scalability. "
+        f"In this paper, we address these challenges by proposing a new framework.",
+        "",
+        "HEAD:2. Related Work",
+        f"Previous studies on {topic.lower()} include various approaches. "
+        f"Smith et al. [1] proposed a baseline method. "
+        f"Johnson et al. [2] extended this with improved accuracy.",
+        "",
+        "HEAD:3. Methodology",
+        f"Our proposed method consists of three main components: "
+        f"data preprocessing, model training, and evaluation. "
+        f"We use a dataset of {random.randint(1000,50000)} samples.",
+        "",
+        "HEAD:4. Experiments",
+        f"We evaluate on benchmark datasets. "
+        f"Our method achieves {random.uniform(85,99):.1f}% accuracy, "
+        f"outperforming previous methods by {random.uniform(1,10):.1f}%.",
+        "",
+        "HEAD:5. Conclusion",
+        f"We presented a new approach to {topic.lower()}. "
+        f"Future work includes extending to larger datasets.",
+        "",
+        "HEAD:References",
+        "[1] Smith et al. - Journal of Machine Learning, 2022",
+        "[2] Johnson et al. - IEEE Conference, 2023",
+        "---",
+        f"Author: {author}",
+        f"Institution: {uni}",
+        f"Email: {remail(author)}",
+        f"Submitted: {rdate()}",
+    ], OUTPUT_DIR / "research_paper" / f"research_{i:03d}.pdf")
+
+
+GENERATORS["research_paper"] = gen_research_paper

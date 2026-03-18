@@ -230,3 +230,13 @@ def _enrich_text(text: str, features: dict) -> str:
         signals.append("SHORT_DOCUMENT")
 
     return " ".join(signals)
+
+
+# Add research paper to DOC_CLASSES
+DOC_CLASSES["research_paper"] = [
+    "abstract introduction methodology results conclusion references",
+    "paper proposes novel approach experimental evaluation benchmark",
+    "literature review related work future work acknowledgements",
+    "journal conference proceedings IEEE arxiv citation bibliography",
+    "hypothesis experiment dataset training accuracy precision recall",
+]
