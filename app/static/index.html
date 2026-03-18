@@ -6,7 +6,6 @@
   <title>AI Document Verifier</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #f5f5f0;
@@ -17,9 +16,7 @@
       justify-content: center;
       padding: 2rem 1rem;
     }
-
-    .container { width: 100%; max-width: 640px; }
-
+    .container { width: 100%; max-width: 660px; }
     .header { text-align: center; margin-bottom: 2rem; }
     .logo {
       width: 52px; height: 52px;
@@ -30,7 +27,6 @@
     }
     .header h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
     .header p { font-size: 14px; color: #666; }
-
     .card {
       background: #fff;
       border-radius: 14px;
@@ -38,7 +34,6 @@
       padding: 1.5rem;
       margin-bottom: 1rem;
     }
-
     .upload-zone {
       border: 1.5px dashed #ccc;
       border-radius: 12px;
@@ -54,9 +49,7 @@
     }
     .upload-zone p { font-size: 14px; color: #666; margin-bottom: 1rem; }
     .upload-zone small { font-size: 12px; color: #999; display: block; margin-top: 0.75rem; }
-
     input[type="file"] { display: none; }
-
     .btn {
       display: inline-block;
       padding: 8px 20px;
@@ -79,9 +72,8 @@
       border-radius: 10px;
       margin-top: 1rem;
     }
-    .btn-primary:hover { background: #3C3489; border-color: #3C3489; }
-    .btn-primary:disabled { background: #b0aee0; border-color: #b0aee0; cursor: not-allowed; }
-
+    .btn-primary:hover { background: #3C3489; }
+    .btn-primary:disabled { background: #b0aee0; cursor: not-allowed; }
     .file-selected {
       display: flex;
       align-items: center;
@@ -92,7 +84,7 @@
       margin-top: 1rem;
       font-size: 13px;
     }
-    .file-selected .file-icon {
+    .file-icon {
       width: 32px; height: 32px;
       background: #EEEDFE;
       border-radius: 8px;
@@ -101,7 +93,6 @@
     }
     .file-name { font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .file-size { color: #888; font-size: 12px; }
-
     .spinner {
       width: 18px; height: 18px;
       border: 2px solid #e0e0d8;
@@ -113,21 +104,18 @@
       margin-right: 8px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .result-card { display: none; }
-
     .verdict-badge {
       display: inline-block;
       padding: 4px 14px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: 600;
-      letter-spacing: 0.5px;
     }
-    .verdict-PASS   { background: #EAF3DE; color: #27500A; }
-    .verdict-REVIEW { background: #FAEEDA; color: #633806; }
-    .verdict-FAIL   { background: #FCEBEB; color: #791F1F; }
-
+    .verdict-PASS    { background: #EAF3DE; color: #27500A; }
+    .verdict-REVIEW  { background: #FAEEDA; color: #633806; }
+    .verdict-FAIL    { background: #FCEBEB; color: #791F1F; }
+    .verdict-FLAGGED { background: #FCEBEB; color: #791F1F; }
     .result-header {
       display: flex;
       justify-content: space-between;
@@ -138,7 +126,6 @@
     }
     .result-filename { font-size: 14px; font-weight: 500; }
     .result-summary { font-size: 13px; color: #666; margin-top: 4px; }
-
     .metrics {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -152,16 +139,14 @@
     }
     .metric-label { font-size: 11px; color: #888; margin-bottom: 4px; }
     .metric-value { font-size: 15px; font-weight: 600; color: #1a1a1a; }
-
     .section-title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: #888;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin: 1rem 0 8px;
     }
-
     .entities { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.5rem; }
     .entity-pill {
       padding: 4px 10px;
@@ -171,7 +156,6 @@
       color: #444;
       border: 0.5px solid #e0e0d8;
     }
-
     .rules-list { list-style: none; }
     .rules-list li {
       display: flex;
@@ -189,10 +173,57 @@
       margin-top: 4px;
       flex-shrink: 0;
     }
-    .dot-pass   { background: #639922; }
-    .dot-error  { background: #E24B4A; }
-    .dot-warning{ background: #BA7517; }
-    .dot-info   { background: #378ADD; }
+    .dot-pass    { background: #639922; }
+    .dot-error   { background: #E24B4A; }
+    .dot-warning { background: #BA7517; }
+    .dot-info    { background: #378ADD; }
+
+    /* AI Detection card */
+    .ai-card {
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 0.5px solid #e0e0d8;
+    }
+    .ai-card.human   { background: #EAF3DE; border-color: #97C459; }
+    .ai-card.review  { background: #FAEEDA; border-color: #EF9F27; }
+    .ai-card.ai      { background: #FCEBEB; border-color: #F09595; }
+    .ai-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .ai-card-title { font-size: 13px; font-weight: 600; }
+    .ai-prob-badge {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    .ai-signals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .ai-signal {
+      background: rgba(255,255,255,0.6);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .ai-signal-label { color: #666; margin-bottom: 2px; }
+    .ai-signal-value { font-weight: 600; }
+    .ai-flags { list-style: none; }
+    .ai-flags li {
+      font-size: 12px;
+      color: #555;
+      padding: 3px 0;
+      border-bottom: 0.5px solid rgba(0,0,0,0.06);
+    }
+    .ai-flags li:last-child { border-bottom: none; }
+    .ai-flags li::before { content: "→ "; color: #888; }
 
     .ocr-text {
       background: #f5f5f0;
@@ -206,7 +237,6 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
-
     .error-box {
       background: #FCEBEB;
       border: 0.5px solid #F09595;
@@ -231,19 +261,16 @@
       </svg>
     </div>
     <h1>AI Document Verifier</h1>
-    <p>Upload a document to verify its type and authenticity</p>
+    <p>Upload a document to verify its type, authenticity and detect AI-generated content</p>
   </div>
 
-  <!-- Upload card -->
   <div class="card">
     <div class="upload-zone" id="dropZone">
       <p>Drag and drop your document here</p>
       <button class="btn" onclick="document.getElementById('fileInput').click()">Choose file</button>
       <small>PDF, JPG, PNG, TIFF up to 10MB</small>
     </div>
-
     <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.tiff,.bmp"/>
-
     <div class="file-selected" id="fileSelected" style="display:none">
       <div class="file-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -251,18 +278,14 @@
       <span class="file-name" id="fileName"></span>
       <span class="file-size" id="fileSize"></span>
     </div>
-
     <button class="btn btn-primary" id="verifyBtn" disabled onclick="verify()">
       Verify document
     </button>
   </div>
 
-  <!-- Error box -->
   <div class="error-box" id="errorBox"></div>
 
-  <!-- Result card -->
   <div class="card result-card" id="resultCard">
-
     <div class="result-header">
       <div>
         <div class="result-filename" id="resultFilename"></div>
@@ -286,6 +309,17 @@
       </div>
     </div>
 
+    <!-- AI Detection Card -->
+    <div class="section-title">AI content detection</div>
+    <div class="ai-card" id="aiCard">
+      <div class="ai-card-header">
+        <span class="ai-card-title" id="aiVerdict"></span>
+        <span class="ai-prob-badge" id="aiProbBadge"></span>
+      </div>
+      <div class="ai-signals" id="aiSignals"></div>
+      <ul class="ai-flags" id="aiFlags"></ul>
+    </div>
+
     <div id="entitiesSection">
       <div class="section-title">Extracted entities</div>
       <div class="entities" id="entities"></div>
@@ -296,7 +330,6 @@
 
     <div class="section-title">Extracted text</div>
     <div class="ocr-text" id="ocrText"></div>
-
   </div>
 </div>
 
@@ -308,7 +341,6 @@
   let selectedFile = null;
 
   fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
-
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
   dropZone.addEventListener('drop', e => {
@@ -330,7 +362,6 @@
 
   async function verify() {
     if (!selectedFile) return;
-
     verifyBtn.disabled = true;
     verifyBtn.innerHTML = '<span class="spinner"></span>Verifying...';
     document.getElementById('resultCard').style.display = 'none';
@@ -342,14 +373,8 @@
     try {
       const res = await fetch('/api/v1/verify', { method: 'POST', body: formData });
       const json = await res.json();
-
-      if (!res.ok) {
-        showError(json.detail || 'Verification failed.');
-        return;
-      }
-
+      if (!res.ok) { showError(json.detail || 'Verification failed.'); return; }
       renderResult(json.data, selectedFile.name);
-
     } catch (err) {
       showError('Could not connect to the API. Make sure the server is running.');
     } finally {
@@ -362,6 +387,7 @@
     const verdict = data.verdict.verdict;
     const cls = data.classification;
     const features = data.features;
+    const ai = data.ai_detection || {};
 
     document.getElementById('resultFilename').textContent = filename;
     document.getElementById('resultSummary').textContent = data.verdict.summary;
@@ -370,24 +396,70 @@
     badge.textContent = verdict;
     badge.className = 'verdict-badge verdict-' + verdict;
 
-    document.getElementById('docType').textContent =
-      cls.predicted_class.replace(/_/g, ' ');
+    document.getElementById('docType').textContent = cls.predicted_class.replace(/_/g, ' ');
     document.getElementById('confidence').textContent = cls.confidence_pct;
     document.getElementById('score').textContent = data.verdict.score_pct;
 
+    // AI Detection card
+    const aiCard = document.getElementById('aiCard');
+    const aiProb = ai.ai_probability || 0;
+    const aiVerdictText = ai.verdict || 'UNKNOWN';
+
+    if (aiVerdictText === 'AI_GENERATED') {
+      aiCard.className = 'ai-card ai';
+      document.getElementById('aiVerdict').textContent = 'AI-generated content detected';
+      document.getElementById('aiProbBadge').style.color = '#791F1F';
+    } else if (aiVerdictText === 'REVIEW') {
+      aiCard.className = 'ai-card review';
+      document.getElementById('aiVerdict').textContent = 'Possibly AI-generated — needs review';
+      document.getElementById('aiProbBadge').style.color = '#633806';
+    } else if (aiVerdictText === 'INSUFFICIENT_TEXT') {
+      aiCard.className = 'ai-card';
+      document.getElementById('aiVerdict').textContent = 'Not enough text for AI analysis';
+      document.getElementById('aiProbBadge').style.color = '#888';
+    } else {
+      aiCard.className = 'ai-card human';
+      document.getElementById('aiVerdict').textContent = 'Human-written content';
+      document.getElementById('aiProbBadge').style.color = '#27500A';
+    }
+
+    document.getElementById('aiProbBadge').textContent = `AI probability: ${ai.ai_probability_pct || '0%'}`;
+
+    // Signals
+    const sigs = ai.signals || {};
+    const sigLabels = {
+      burstiness: 'Burstiness',
+      repetition_score: 'Repetition',
+      ngram_diversity: 'N-gram diversity',
+      punctuation_uniformity: 'Punct. uniformity',
+    };
+    let sigsHtml = '';
+    for (const [key, label] of Object.entries(sigLabels)) {
+      if (sigs[key] !== undefined) {
+        sigsHtml += `<div class="ai-signal">
+          <div class="ai-signal-label">${label}</div>
+          <div class="ai-signal-value">${sigs[key]}</div>
+        </div>`;
+      }
+    }
+    document.getElementById('aiSignals').innerHTML = sigsHtml;
+
+    // Flags
+    const flags = ai.flags || [];
+    document.getElementById('aiFlags').innerHTML = flags
+      .map(f => `<li>${f}</li>`).join('');
+
     // Entities
     const pills = [];
-    (features.dates || []).forEach(d => pills.push({ label: d, type: 'date' }));
-    (features.emails || []).forEach(e => pills.push({ label: e, type: 'email' }));
-    (features.urls || []).forEach(u => pills.push({ label: u, type: 'url' }));
-    (features.amounts || []).forEach(a => pills.push({ label: a, type: 'amount' }));
-    (features.pincodes || []).forEach(p => pills.push({ label: p, type: 'pincode' }));
+    (features.dates || []).forEach(d => pills.push(d));
+    (features.emails || []).forEach(e => pills.push(e));
+    (features.urls || []).forEach(u => pills.push(u));
+    (features.amounts || []).forEach(a => pills.push(a));
+    (features.pincodes || []).forEach(p => pills.push(p));
 
     const entitiesEl = document.getElementById('entities');
     if (pills.length > 0) {
-      entitiesEl.innerHTML = pills.map(p =>
-        `<span class="entity-pill">${p.label}</span>`
-      ).join('');
+      entitiesEl.innerHTML = pills.map(p => `<span class="entity-pill">${p}</span>`).join('');
       document.getElementById('entitiesSection').style.display = 'block';
     } else {
       document.getElementById('entitiesSection').style.display = 'none';
@@ -395,15 +467,12 @@
 
     // Rules
     const rules = data.validation.rules.results || [];
-    const rulesList = document.getElementById('rulesList');
-    rulesList.innerHTML = rules.map(r => {
+    document.getElementById('rulesList').innerHTML = rules.map(r => {
       let dotClass = r.passed ? 'dot-pass' : (r.severity === 'error' ? 'dot-error' : r.severity === 'warning' ? 'dot-warning' : 'dot-info');
       return `<li><span class="rule-dot ${dotClass}"></span>${r.message}</li>`;
     }).join('');
 
-    // OCR text
-    document.getElementById('ocrText').textContent =
-      data.ocr.full_text || 'No text extracted.';
+    document.getElementById('ocrText').textContent = data.ocr.full_text || 'No text extracted.';
 
     document.getElementById('resultCard').style.display = 'block';
     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -417,7 +486,3 @@
 </script>
 </body>
 </html>
-<script>
-// Patch renderResult to show AI detection
-const _origRender = window.renderResult;
-</script>
