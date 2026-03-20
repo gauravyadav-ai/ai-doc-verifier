@@ -192,3 +192,56 @@ def detect_ai(text: str) -> dict[str, Any]:
         "signals": signals,
         "flags": flags if flags else ["No AI patterns detected"],
     }
+
+
+def detect_ai_with_perplexity(text: str) -> dict:
+    """
+    Enhanced AI detection combining statistical signals + perplexity.
+    This is the full SOTA-grade detection pipeline.
+    """
+    # Get base statistical detection
+    base = detect_ai(text)
+
+    # Add perplexity scoring
+    try:
+        from app.validator.perplexity_scorer import compute_perplexity, interpret_perplexity
+        perplexity = compute_perplexity(text)
+        perp_result = interpret_perplexity(perplexity)
+
+        # Combine scores
+        combined_score = base["ai_probability"] + perp_result["ai_score_contribution"]
+        combined_score = round(min(combined_score, 1.0), 4)
+
+        # Add perplexity flag
+        flags = base["flags"].copy()
+        if perplexity is not None:
+            if perp_result["interpretation"] == "very_likely_ai":
+                flags.append(f"Very low perplexity ({perplexity:.0f}) — text is highly predictable, strong AI signal")
+            elif perp_result["interpretation"] == "likely_ai":
+                flags.append(f"Low perplexity ({perplexity:.0f}) — text predictability consistent with AI generation")
+            elif perp_result["interpretation"] == "possibly_ai":
+                flags.append(f"Moderate perplexity ({perplexity:.0f}) — some AI characteristics detected")
+
+        if combined_score >= 0.5:
+            verdict = "AI_GENERATED"
+        elif combined_score >= 0.25:
+            verdict = "REVIEW"
+        else:
+            verdict = "HUMAN"
+
+        base.update({
+            "ai_probability": combined_score,
+            "ai_probability_pct": f"{combined_score * 100:.0f}%",
+            "verdict": verdict,
+            "is_ai_generated": combined_score >= 0.5,
+            "flags": flags,
+            "perplexity": perplexity,
+            "perplexity_interpretation": perp_result["interpretation"],
+        })
+
+    except Exception as e:
+        # If perplexity fails, fall back to statistical only
+        base["perplexity"] = None
+        base["perplexity_error"] = str(e)
+
+    return base

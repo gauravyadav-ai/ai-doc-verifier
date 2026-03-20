@@ -3,100 +3,199 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Document Verifier</title>
+  <title>DocVerify — AI Document Verification</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f5f0;
+      --surface: #ffffff;
+      --surface2: #f5f5f0;
+      --border: #e0e0d8;
+      --border2: #d0d0c8;
+      --text: #1a1a1a;
+      --text2: #666666;
+      --text3: #999999;
+      --purple: #534AB7;
+      --purple-light: #EEEDFE;
+      --green-bg: #EAF3DE;
+      --green-text: #27500A;
+      --amber-bg: #FAEEDA;
+      --amber-text: #633806;
+      --red-bg: #FCEBEB;
+      --red-text: #791F1F;
+      --red-border: #F09595;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f0;
-      color: #1a1a1a;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+    }
+
+    /* Navbar */
+    nav {
+      background: var(--surface);
+      border-bottom: 0.5px solid var(--border);
+      padding: 0 2rem;
+      height: 52px;
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 2rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .container { width: 100%; max-width: 660px; }
-    .header { text-align: center; margin-bottom: 2rem; }
-    .logo {
-      width: 52px; height: 52px;
-      background: #EEEDFE;
-      border-radius: 14px;
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .nav-logo {
+      width: 28px; height: 28px;
+      background: var(--purple-light);
+      border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1rem;
     }
-    .header h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
-    .header p { font-size: 14px; color: #666; }
+    .nav-badge {
+      font-size: 11px;
+      color: var(--text3);
+      background: var(--surface2);
+      padding: 2px 10px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border);
+    }
+
+    /* Main layout */
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .hero h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .hero p {
+      font-size: 14px;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+    .feature-pills {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      font-size: 11px;
+      color: var(--text2);
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 12px;
+    }
+
+    /* Card */
     .card {
-      background: #fff;
+      background: var(--surface);
       border-radius: 14px;
-      border: 0.5px solid #e0e0d8;
+      border: 0.5px solid var(--border);
       padding: 1.5rem;
       margin-bottom: 1rem;
     }
+
+    /* Upload zone */
     .upload-zone {
-      border: 1.5px dashed #ccc;
+      border: 1.5px dashed var(--border2);
       border-radius: 12px;
       padding: 2.5rem 1rem;
       text-align: center;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      background: #fafaf8;
+      transition: all 0.2s;
+      background: var(--surface2);
     }
     .upload-zone:hover, .upload-zone.dragover {
-      border-color: #7F77DD;
-      background: #EEEDFE;
+      border-color: var(--purple);
+      background: var(--purple-light);
     }
-    .upload-zone p { font-size: 14px; color: #666; margin-bottom: 1rem; }
-    .upload-zone small { font-size: 12px; color: #999; display: block; margin-top: 0.75rem; }
+    .upload-icon {
+      width: 44px; height: 44px;
+      background: var(--surface);
+      border-radius: 10px;
+      border: 0.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+    }
+    .upload-zone h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .upload-zone p { font-size: 13px; color: var(--text2); margin-bottom: 14px; }
+    .upload-zone small { font-size: 11px; color: var(--text3); display: block; margin-top: 10px; }
     input[type="file"] { display: none; }
+
+    /* Buttons */
     .btn {
-      display: inline-block;
-      padding: 8px 20px;
+      padding: 7px 18px;
       font-size: 13px;
       font-weight: 500;
       border-radius: 8px;
-      border: 0.5px solid #ccc;
-      background: #fff;
+      border: 0.5px solid var(--border2);
+      background: var(--surface);
+      color: var(--text);
       cursor: pointer;
       transition: background 0.15s;
     }
-    .btn:hover { background: #f0f0ec; }
+    .btn:hover { background: var(--surface2); }
     .btn-primary {
-      background: #534AB7;
-      color: #fff;
-      border-color: #534AB7;
       width: 100%;
-      padding: 10px;
+      padding: 11px;
       font-size: 14px;
       border-radius: 10px;
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple);
       margin-top: 1rem;
+      font-weight: 500;
     }
-    .btn-primary:hover { background: #3C3489; }
-    .btn-primary:disabled { background: #b0aee0; cursor: not-allowed; }
-    .file-selected {
+    .btn-primary:hover { background: #3C3489; border-color: #3C3489; }
+    .btn-primary:disabled { background: #b0aee0; border-color: #b0aee0; cursor: not-allowed; }
+
+    /* File selected */
+    .file-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 14px;
-      background: #f5f5f0;
+      background: var(--surface2);
       border-radius: 8px;
-      margin-top: 1rem;
-      font-size: 13px;
+      padding: 10px 12px;
+      margin-top: 12px;
     }
-    .file-icon {
-      width: 32px; height: 32px;
-      background: #EEEDFE;
+    .file-thumb {
+      width: 34px; height: 34px;
+      background: var(--purple-light);
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-    .file-name { font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .file-size { color: #888; font-size: 12px; }
+    .file-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-meta { font-size: 12px; color: var(--text3); }
+
+    /* Spinner */
     .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid #e0e0d8;
-      border-top-color: #534AB7;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       display: inline-block;
@@ -104,73 +203,124 @@
       margin-right: 8px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .result-card { display: none; }
-    .verdict-badge {
-      display: inline-block;
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .verdict-PASS    { background: #EAF3DE; color: #27500A; }
-    .verdict-REVIEW  { background: #FAEEDA; color: #633806; }
-    .verdict-FAIL    { background: #FCEBEB; color: #791F1F; }
-    .verdict-FLAGGED { background: #FCEBEB; color: #791F1F; }
+
+    /* Result header */
     .result-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 0.5px solid #e0e0d8;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 0.5px solid var(--border);
     }
-    .result-filename { font-size: 14px; font-weight: 500; }
-    .result-summary { font-size: 13px; color: #666; margin-top: 4px; }
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 1rem;
-    }
-    .metric {
-      background: #f5f5f0;
-      border-radius: 10px;
-      padding: 12px;
-    }
-    .metric-label { font-size: 11px; color: #888; margin-bottom: 4px; }
-    .metric-value { font-size: 15px; font-weight: 600; color: #1a1a1a; }
-    .section-title {
-      font-size: 11px;
-      font-weight: 600;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 1rem 0 8px;
-    }
-    .entities { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.5rem; }
-    .entity-pill {
-      padding: 4px 10px;
+    .result-filename { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+    .result-summary { font-size: 13px; color: var(--text2); line-height: 1.5; max-width: 380px; }
+
+    /* Verdict badge */
+    .badge {
+      padding: 4px 14px;
       border-radius: 20px;
       font-size: 12px;
-      background: #f0f0ec;
-      color: #444;
-      border: 0.5px solid #e0e0d8;
+      font-weight: 600;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
     }
-    .rules-list { list-style: none; }
-    .rules-list li {
+    .badge-PASS    { background: var(--green-bg); color: var(--green-text); }
+    .badge-REVIEW  { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-FAIL    { background: var(--red-bg); color: var(--red-text); }
+    .badge-FLAGGED { background: var(--red-bg); color: var(--red-text); }
+
+    /* Metrics grid */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 1.25rem;
+    }
+    .metric {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .metric.highlight-red { background: var(--red-bg); }
+    .metric.highlight-green { background: var(--green-bg); }
+    .metric-label { font-size: 10px; color: var(--text3); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .metric-value { font-size: 14px; font-weight: 600; color: var(--text); }
+    .metric.highlight-red .metric-label { color: #A32D2D; }
+    .metric.highlight-red .metric-value { color: var(--red-text); }
+    .metric.highlight-green .metric-value { color: var(--green-text); }
+
+    /* Section headers */
+    .section-head {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 1.25rem 0 8px;
+    }
+
+    /* AI detection box */
+    .ai-box {
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 4px;
+    }
+    .ai-box.human  { background: var(--green-bg); }
+    .ai-box.review { background: var(--amber-bg); }
+    .ai-box.flagged { background: var(--red-bg); border: 0.5px solid var(--red-border); }
+    .ai-box.unknown { background: var(--surface2); }
+    .ai-box-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .ai-verdict { font-size: 13px; font-weight: 600; }
+    .ai-verdict.human   { color: var(--green-text); }
+    .ai-verdict.review  { color: var(--amber-text); }
+    .ai-verdict.flagged { color: var(--red-text); }
+    .ai-prob { font-size: 13px; font-weight: 700; }
+    .ai-signals-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .ai-sig {
+      background: rgba(255,255,255,0.55);
+      border-radius: 6px;
+      padding: 7px 10px;
+    }
+    .ai-sig-label { font-size: 10px; color: var(--text3); margin-bottom: 2px; }
+    .ai-sig-val { font-size: 12px; font-weight: 600; color: var(--text); }
+    .ai-flags { list-style: none; }
+    .ai-flags li {
+      font-size: 12px;
+      color: var(--text2);
+      padding: 3px 0;
+      line-height: 1.5;
+    }
+    .ai-flags li::before { content: "→ "; color: var(--text3); }
+
+    /* Validation checks */
+    .checks { list-style: none; }
+    .checks li {
       display: flex;
       align-items: flex-start;
       gap: 8px;
       font-size: 13px;
-      padding: 6px 0;
+      color: var(--text2);
+      padding: 5px 0;
       border-bottom: 0.5px solid #f0f0ec;
-      color: #444;
+      line-height: 1.5;
     }
-    .rules-list li:last-child { border-bottom: none; }
-    .rule-dot {
-      width: 8px; height: 8px;
+    .checks li:last-child { border-bottom: none; }
+    .dot {
+      width: 7px; height: 7px;
       border-radius: 50%;
-      margin-top: 4px;
+      margin-top: 5px;
       flex-shrink: 0;
     }
     .dot-pass    { background: #639922; }
@@ -178,106 +328,124 @@
     .dot-warning { background: #BA7517; }
     .dot-info    { background: #378ADD; }
 
-    /* AI Detection card */
-    .ai-card {
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border: 0.5px solid #e0e0d8;
-    }
-    .ai-card.human   { background: #EAF3DE; border-color: #97C459; }
-    .ai-card.review  { background: #FAEEDA; border-color: #EF9F27; }
-    .ai-card.ai      { background: #FCEBEB; border-color: #F09595; }
-    .ai-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .ai-card-title { font-size: 13px; font-weight: 600; }
-    .ai-prob-badge {
-      font-size: 13px;
-      font-weight: 700;
-      padding: 2px 10px;
+    /* Entities */
+    .entity-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .entity-tag {
+      font-size: 12px;
+      padding: 3px 10px;
       border-radius: 20px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      color: var(--text2);
     }
-    .ai-signals {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-    .ai-signal {
-      background: rgba(255,255,255,0.6);
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 12px;
-    }
-    .ai-signal-label { color: #666; margin-bottom: 2px; }
-    .ai-signal-value { font-weight: 600; }
-    .ai-flags { list-style: none; }
-    .ai-flags li {
-      font-size: 12px;
-      color: #555;
-      padding: 3px 0;
-      border-bottom: 0.5px solid rgba(0,0,0,0.06);
-    }
-    .ai-flags li:last-child { border-bottom: none; }
-    .ai-flags li::before { content: "→ "; color: #888; }
 
-    .ocr-text {
-      background: #f5f5f0;
+    /* OCR text */
+    .ocr-box {
+      background: var(--surface2);
       border-radius: 8px;
       padding: 12px;
       font-size: 12px;
-      color: #555;
-      line-height: 1.6;
-      max-height: 140px;
+      color: var(--text2);
+      line-height: 1.7;
+      max-height: 160px;
       overflow-y: auto;
       white-space: pre-wrap;
       word-break: break-word;
+      font-family: ui-monospace, monospace;
     }
+
+    /* Error */
     .error-box {
-      background: #FCEBEB;
-      border: 0.5px solid #F09595;
+      background: var(--red-bg);
+      border: 0.5px solid var(--red-border);
       border-radius: 10px;
       padding: 1rem;
       font-size: 13px;
-      color: #791F1F;
+      color: var(--red-text);
       display: none;
+      margin-bottom: 1rem;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--purple);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    @media (max-width: 480px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .ai-signals-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-<div class="container">
 
-  <div class="header">
-    <div class="logo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
         <polyline points="14 2 14 8 20 8"/>
-        <polyline points="9 12 12 15 15 12"/>
-        <line x1="12" y1="15" x2="12" y2="9"/>
+        <line x1="9" y1="15" x2="15" y2="15"/>
+        <line x1="9" y1="11" x2="15" y2="11"/>
       </svg>
     </div>
-    <h1>AI Document Verifier</h1>
-    <p>Upload a document to verify its type, authenticity and detect AI-generated content</p>
+    DocVerify
+  </div>
+  <span class="nav-badge">39 document types</span>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <h1>Verify any document instantly</h1>
+    <p>AI-powered verification — detects document type, validates authenticity, and flags AI-generated content</p>
+    <div class="feature-pills">
+      <span class="pill">OCR extraction</span>
+      <span class="pill">ML classification</span>
+      <span class="pill">AI content detection</span>
+      <span class="pill">Authenticity scoring</span>
+    </div>
   </div>
 
   <div class="card">
-    <div class="upload-zone" id="dropZone">
-      <p>Drag and drop your document here</p>
-      <button class="btn" onclick="document.getElementById('fileInput').click()">Choose file</button>
-      <small>PDF, JPG, PNG, TIFF up to 10MB</small>
+    <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <h3>Drop your document here</h3>
+      <p>or click to browse files</p>
+      <small>PDF · JPG · PNG · TIFF · max 10MB</small>
     </div>
     <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.tiff,.bmp"/>
-    <div class="file-selected" id="fileSelected" style="display:none">
-      <div class="file-icon">
+
+    <div class="file-row" id="fileRow" style="display:none">
+      <div class="file-thumb">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       </div>
       <span class="file-name" id="fileName"></span>
-      <span class="file-size" id="fileSize"></span>
+      <span class="file-meta" id="fileSize"></span>
     </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
     <button class="btn btn-primary" id="verifyBtn" disabled onclick="verify()">
       Verify document
     </button>
@@ -285,59 +453,45 @@
 
   <div class="error-box" id="errorBox"></div>
 
-  <div class="card result-card" id="resultCard">
+  <div class="card" id="resultCard" style="display:none">
+
     <div class="result-header">
       <div>
         <div class="result-filename" id="resultFilename"></div>
         <div class="result-summary" id="resultSummary"></div>
       </div>
-      <span class="verdict-badge" id="verdictBadge"></span>
+      <span class="badge" id="verdictBadge"></span>
     </div>
 
-    <div class="metrics">
-      <div class="metric">
-        <div class="metric-label">Document type</div>
-        <div class="metric-value" id="docType"></div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Confidence</div>
-        <div class="metric-value" id="confidence"></div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Score</div>
-        <div class="metric-value" id="score"></div>
-      </div>
-    </div>
+    <div class="metrics" id="metricsGrid"></div>
 
-    <!-- AI Detection Card -->
-    <div class="section-title">AI content detection</div>
-    <div class="ai-card" id="aiCard">
-      <div class="ai-card-header">
-        <span class="ai-card-title" id="aiVerdict"></span>
-        <span class="ai-prob-badge" id="aiProbBadge"></span>
+    <div class="section-head">AI content detection</div>
+    <div class="ai-box" id="aiBox">
+      <div class="ai-box-top">
+        <span class="ai-verdict" id="aiVerdict"></span>
+        <span class="ai-prob" id="aiProb"></span>
       </div>
-      <div class="ai-signals" id="aiSignals"></div>
+      <div class="ai-signals-row" id="aiSignals"></div>
       <ul class="ai-flags" id="aiFlags"></ul>
     </div>
 
-    <div id="entitiesSection">
-      <div class="section-title">Extracted entities</div>
-      <div class="entities" id="entities"></div>
+    <div id="entitiesWrap" style="display:none">
+      <div class="section-head">Extracted entities</div>
+      <div class="entity-wrap" id="entities"></div>
     </div>
 
-    <div class="section-title">Validation checks</div>
-    <ul class="rules-list" id="rulesList"></ul>
+    <div class="section-head">Validation checks</div>
+    <ul class="checks" id="checks"></ul>
 
-    <div class="section-title">Extracted text</div>
-    <div class="ocr-text" id="ocrText"></div>
+    <div class="section-head">Extracted text</div>
+    <div class="ocr-box" id="ocrText"></div>
+
   </div>
 </div>
 
 <script>
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
-  const verifyBtn = document.getElementById('verifyBtn');
-  const fileSelected = document.getElementById('fileSelected');
   let selectedFile = null;
 
   fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
@@ -354,18 +508,28 @@
     selectedFile = file;
     document.getElementById('fileName').textContent = file.name;
     document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(0) + ' KB';
-    fileSelected.style.display = 'flex';
-    verifyBtn.disabled = false;
+    document.getElementById('fileRow').style.display = 'flex';
+    document.getElementById('verifyBtn').disabled = false;
     document.getElementById('resultCard').style.display = 'none';
     document.getElementById('errorBox').style.display = 'none';
   }
 
   async function verify() {
     if (!selectedFile) return;
-    verifyBtn.disabled = true;
-    verifyBtn.innerHTML = '<span class="spinner"></span>Verifying...';
+    const btn = document.getElementById('verifyBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Verifying...';
     document.getElementById('resultCard').style.display = 'none';
     document.getElementById('errorBox').style.display = 'none';
+
+    const prog = document.getElementById('progressWrap');
+    const bar = document.getElementById('progressBar');
+    prog.style.display = 'block';
+    let p = 0;
+    const ticker = setInterval(() => {
+      p = Math.min(p + Math.random() * 15, 85);
+      bar.style.width = p + '%';
+    }, 300);
 
     const formData = new FormData();
     formData.append('file', selectedFile);
@@ -373,13 +537,18 @@
     try {
       const res = await fetch('/api/v1/verify', { method: 'POST', body: formData });
       const json = await res.json();
+      clearInterval(ticker);
+      bar.style.width = '100%';
+      setTimeout(() => { prog.style.display = 'none'; bar.style.width = '0%'; }, 400);
       if (!res.ok) { showError(json.detail || 'Verification failed.'); return; }
       renderResult(json.data, selectedFile.name);
     } catch (err) {
-      showError('Could not connect to the API. Make sure the server is running.');
+      clearInterval(ticker);
+      prog.style.display = 'none';
+      showError('Could not connect to the server. Make sure it is running.');
     } finally {
-      verifyBtn.disabled = false;
-      verifyBtn.innerHTML = 'Verify document';
+      btn.disabled = false;
+      btn.innerHTML = 'Verify document';
     }
   }
 
@@ -388,94 +557,112 @@
     const cls = data.classification;
     const features = data.features;
     const ai = data.ai_detection || {};
+    const aiProb = ai.ai_probability || 0;
 
     document.getElementById('resultFilename').textContent = filename;
     document.getElementById('resultSummary').textContent = data.verdict.summary;
 
     const badge = document.getElementById('verdictBadge');
     badge.textContent = verdict;
-    badge.className = 'verdict-badge verdict-' + verdict;
+    badge.className = 'badge badge-' + verdict;
 
-    document.getElementById('docType').textContent = cls.predicted_class.replace(/_/g, ' ');
-    document.getElementById('confidence').textContent = cls.confidence_pct;
-    document.getElementById('score').textContent = data.verdict.score_pct;
+    // Metrics
+    const aiClass = aiProb >= 0.5 ? 'highlight-red' : aiProb >= 0.25 ? '' : 'highlight-green';
+    document.getElementById('metricsGrid').innerHTML = `
+      <div class="metric">
+        <div class="metric-label">Type</div>
+        <div class="metric-value">${cls.predicted_class.replace(/_/g,' ')}</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Confidence</div>
+        <div class="metric-value">${cls.confidence_pct}</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Score</div>
+        <div class="metric-value">${data.verdict.score_pct}</div>
+      </div>
+      <div class="metric ${aiClass}">
+        <div class="metric-label">AI prob.</div>
+        <div class="metric-value">${ai.ai_probability_pct || '0%'}</div>
+      </div>
+    `;
 
-    // AI Detection card
-    const aiCard = document.getElementById('aiCard');
-    const aiProb = ai.ai_probability || 0;
-    const aiVerdictText = ai.verdict || 'UNKNOWN';
+    // AI box
+    const aiBox = document.getElementById('aiBox');
+    const aiVerdict = document.getElementById('aiVerdict');
+    const aiProbEl = document.getElementById('aiProb');
+    const aiV = ai.verdict || 'UNKNOWN';
 
-    if (aiVerdictText === 'AI_GENERATED') {
-      aiCard.className = 'ai-card ai';
-      document.getElementById('aiVerdict').textContent = 'AI-generated content detected';
-      document.getElementById('aiProbBadge').style.color = '#791F1F';
-    } else if (aiVerdictText === 'REVIEW') {
-      aiCard.className = 'ai-card review';
-      document.getElementById('aiVerdict').textContent = 'Possibly AI-generated — needs review';
-      document.getElementById('aiProbBadge').style.color = '#633806';
-    } else if (aiVerdictText === 'INSUFFICIENT_TEXT') {
-      aiCard.className = 'ai-card';
-      document.getElementById('aiVerdict').textContent = 'Not enough text for AI analysis';
-      document.getElementById('aiProbBadge').style.color = '#888';
+    if (aiV === 'AI_GENERATED') {
+      aiBox.className = 'ai-box flagged';
+      aiVerdict.className = 'ai-verdict flagged';
+      aiVerdict.textContent = 'AI-generated content detected';
+      aiProbEl.style.color = '#791F1F';
+    } else if (aiV === 'REVIEW') {
+      aiBox.className = 'ai-box review';
+      aiVerdict.className = 'ai-verdict review';
+      aiVerdict.textContent = 'Possibly AI-generated — needs review';
+      aiProbEl.style.color = '#633806';
+    } else if (aiV === 'INSUFFICIENT_TEXT') {
+      aiBox.className = 'ai-box unknown';
+      aiVerdict.className = 'ai-verdict';
+      aiVerdict.textContent = 'Not enough text for AI analysis';
+      aiProbEl.style.color = '#999';
     } else {
-      aiCard.className = 'ai-card human';
-      document.getElementById('aiVerdict').textContent = 'Human-written content';
-      document.getElementById('aiProbBadge').style.color = '#27500A';
+      aiBox.className = 'ai-box human';
+      aiVerdict.className = 'ai-verdict human';
+      aiVerdict.textContent = 'Human-written content';
+      aiProbEl.style.color = '#27500A';
     }
+    aiProbEl.textContent = `${ai.ai_probability_pct || '0%'} AI probability`;
 
-    document.getElementById('aiProbBadge').textContent = `AI probability: ${ai.ai_probability_pct || '0%'}`;
-
-    // Signals
     const sigs = ai.signals || {};
-    const sigLabels = {
+    const sigMap = {
       burstiness: 'Burstiness',
       repetition_score: 'Repetition',
       ngram_diversity: 'N-gram diversity',
       punctuation_uniformity: 'Punct. uniformity',
     };
-    let sigsHtml = '';
-    for (const [key, label] of Object.entries(sigLabels)) {
-      if (sigs[key] !== undefined) {
-        sigsHtml += `<div class="ai-signal">
-          <div class="ai-signal-label">${label}</div>
-          <div class="ai-signal-value">${sigs[key]}</div>
-        </div>`;
-      }
-    }
-    document.getElementById('aiSignals').innerHTML = sigsHtml;
+    document.getElementById('aiSignals').innerHTML = Object.entries(sigMap)
+      .filter(([k]) => sigs[k] !== undefined)
+      .map(([k, label]) => `
+        <div class="ai-sig">
+          <div class="ai-sig-label">${label}</div>
+          <div class="ai-sig-val">${sigs[k]}</div>
+        </div>`)
+      .join('');
 
-    // Flags
-    const flags = ai.flags || [];
-    document.getElementById('aiFlags').innerHTML = flags
+    document.getElementById('aiFlags').innerHTML = (ai.flags || [])
       .map(f => `<li>${f}</li>`).join('');
 
     // Entities
-    const pills = [];
-    (features.dates || []).forEach(d => pills.push(d));
-    (features.emails || []).forEach(e => pills.push(e));
-    (features.urls || []).forEach(u => pills.push(u));
-    (features.amounts || []).forEach(a => pills.push(a));
-    (features.pincodes || []).forEach(p => pills.push(p));
-
-    const entitiesEl = document.getElementById('entities');
+    const pills = [
+      ...(features.dates||[]),
+      ...(features.emails||[]),
+      ...(features.urls||[]),
+      ...(features.amounts||[]),
+      ...(features.pincodes||[]),
+    ];
     if (pills.length > 0) {
-      entitiesEl.innerHTML = pills.map(p => `<span class="entity-pill">${p}</span>`).join('');
-      document.getElementById('entitiesSection').style.display = 'block';
+      document.getElementById('entities').innerHTML = pills
+        .map(p => `<span class="entity-tag">${p}</span>`).join('');
+      document.getElementById('entitiesWrap').style.display = 'block';
     } else {
-      document.getElementById('entitiesSection').style.display = 'none';
+      document.getElementById('entitiesWrap').style.display = 'none';
     }
 
-    // Rules
+    // Checks
     const rules = data.validation.rules.results || [];
-    document.getElementById('rulesList').innerHTML = rules.map(r => {
-      let dotClass = r.passed ? 'dot-pass' : (r.severity === 'error' ? 'dot-error' : r.severity === 'warning' ? 'dot-warning' : 'dot-info');
-      return `<li><span class="rule-dot ${dotClass}"></span>${r.message}</li>`;
+    document.getElementById('checks').innerHTML = rules.map(r => {
+      const dot = r.passed ? 'dot-pass' : r.severity === 'error' ? 'dot-error' : r.severity === 'warning' ? 'dot-warning' : 'dot-info';
+      return `<li><span class="dot ${dot}"></span>${r.message}</li>`;
     }).join('');
 
     document.getElementById('ocrText').textContent = data.ocr.full_text || 'No text extracted.';
 
-    document.getElementById('resultCard').style.display = 'block';
-    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const card = document.getElementById('resultCard');
+    card.style.display = 'block';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function showError(msg) {

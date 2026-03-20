@@ -8,7 +8,7 @@ from app.pipeline.extractor import extract_features
 from app.pipeline.classifier import classify_document
 from app.validator.rules import run_rules
 from app.validator.ml_validator import compute_anomaly_score
-from app.validator.ai_detector import detect_ai
+from app.validator.ai_detector import detect_ai_with_perplexity as detect_ai
 from app.database import get_db, VerificationResult
 
 router = APIRouter(prefix="/api/v1", tags=["verification"])
